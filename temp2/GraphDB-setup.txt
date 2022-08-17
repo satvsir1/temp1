@@ -1,0 +1,33 @@
+sudo yum update
+sudo yum install awscli
+
+
+
+sudo yum install docker
+sudo chmod 666 /var/run/docker.sock
+dockerd &
+
+wget https://testsatv02.s3.us-west-2.amazonaws.com/AGS_ENTERPRISE_expires-03-10-2022.license
+wget https://testsatv02.s3.us-west-2.amazonaws.com/graphdb-free-10.0.2-dist.zip
+wget https://testsatv02.s3.us-west-2.amazonaws.com/Ontotext-graphdb-docker-main.zip
+
+chmod 777 <Ontotext-Folder-Files>
+./build.sh
+
+
+
+#!/bin/bash
+sudo yum update -y
+sudo amazon-linux-extras install firefox -y
+wget https://testsatv02.s3.us-west-2.amazonaws.com/AGS_ENTERPRISE_expires-03-10-2022.license
+wget https://testsatv02.s3.us-west-2.amazonaws.com/graphdb-free-10.0.2-dist.zip
+wget https://testsatv02.s3.us-west-2.amazonaws.com/Ontotext-graphdb-docker-main.zip
+sudo yum search docker -y
+sudo yum install docker -y
+sudo usermod -a -G docker ec2-user
+id ec2-user
+newgrp docker
+sudo systemctl enable docker.service 
+sudo systemctl start docker.service 
+sudo systemctl status docker.service
+
