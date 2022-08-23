@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Template to Create an EC2 instance in a VPC
+   
+Parameters:
+  VpcId:
+    Type: String
+    Description: VPC id
+    Default: vpc-07c9dceb0709aea7c
+  ImageId:
+    Type: String
+    Description: 'Linux 2 AMI for us-east-1'
+    Default: 'ami-090fa75af13c156b4'
+  InstanceType:
+    Type: String
+    Description:  you can choose  t2 micro to remain in free tier
+    Default: t2.micro
+  KeyName:
+    Description: SSH Keypair to login to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: EC2KP
+
+Resources:
+  ServerInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties: 
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SecurityGroupIds: 
+        - !Ref ServerSecurityGroup
+      UserData:
+        Fn::Base64: 
+          !Sub |
+            #!/bin/bash
+            sudo yum update -y
+            sudo yum search docker -y
+            sudo yum install docker -y
+            sudo usermod -a -G docker ec2-user
+            id ec2-user
+            newgrp docker
+            sudo systemctl enable docker.service 
+            sudo systemctl start docker.service 
+            sudo systemctl status docker.service
+  ServerSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: SG to allow SSH access via port 22 and allowing traffic on port 80 
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: GraphDBServer
+Outputs:
+  ServerInstanceId:
+    Description: Instance Id 
+    Value: !Ref ServerInstance
