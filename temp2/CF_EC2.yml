@@ -33,6 +33,9 @@ Resources:
           !Sub |
             #!/bin/bash
             sudo yum update -y
+            sudo amazon-linux-extras install java-openjdk11 -y
+            sudo amazon-linux-extras install firefox -y
+            sudo yum install wget -y
             sudo yum search docker -y
             sudo yum install docker -y
             sudo usermod -a -G docker ec2-user
@@ -41,6 +44,11 @@ Resources:
             sudo systemctl enable docker.service 
             sudo systemctl start docker.service 
             sudo systemctl status docker.service
+            sudo cd /home/ec2-user
+            sudo wget https://testsatv02.s3.us-west-2.amazonaws.com/AGS_ENTERPRISE_expires-03-10-2022.license
+            sudo wget https://testsatv02.s3.us-west-2.amazonaws.com/graphdb-free-10.0.2-dist.zip
+            sudo wget https://testsatv02.s3.us-west-2.amazonaws.com/Ontotext-graphdb-docker.zip
+            
   ServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -50,6 +58,14 @@ Resources:
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: '0'
+          ToPort: '65535'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
           CidrIp: '0.0.0.0/0'
         - IpProtocol: tcp
           FromPort: 80
